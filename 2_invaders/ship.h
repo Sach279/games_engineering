@@ -1,24 +1,28 @@
-//ship.h
 #pragma once
 #include <SFML/Graphics.hpp>
+
+enum class ShipType {
+    PLAYER,
+    INVADER
+};
 
 class Ship : public sf::Sprite {
 protected:
     sf::IntRect _sprite;
-    //Default constructor is hidden
-    Ship();
+    ShipType type;  // Add type property
+    Ship(); // Default constructor hidden
 public:
-    //Constructor that takes a sprite
-    explicit Ship(sf::IntRect ir);
-    //Pure virtual deconstructor -- makes this an abstract class and avoids undefined behaviour!
+    explicit Ship(sf::IntRect ir, ShipType shipType); // Modify constructor
     virtual ~Ship() = 0;
-    //Update, virtual so can be overridden, but not pure virtual
-    virtual void Update(const float &dt);
+    virtual void Update(const float& dt);
     virtual void MoveDown(float distance) {
         move(0, distance);
     }
+
+    ShipType getType() const { return type; } // Getter for the type
 };
 
+// Existing classes
 class Invader : public Ship {
 public:
     static bool direction;
@@ -36,4 +40,3 @@ public:
         // Do nothing, player doesn't move down
     }
 };
-

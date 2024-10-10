@@ -38,8 +38,6 @@ void Load() {
 
     Player* player = new Player();
     ships.push_back(player);
-
-
 }
 
 void Render(RenderWindow& window) {
@@ -51,10 +49,9 @@ void Render(RenderWindow& window) {
 }
 
 void Update(RenderWindow& window) {
-    // Reset clock, recalculate deltatime
     static Clock clock;
     float dt = clock.restart().asSeconds();
-    // check and consume events
+
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == Event::Closed) {
@@ -63,43 +60,55 @@ void Update(RenderWindow& window) {
         }
     }
 
-    for (auto& s : ships) {
-        s->Update(dt);
-    };
-
-    // Move invaders
-    for (auto& s : ships) {
-        Vector2f position = s->getPosition();
-        if (movingRight) {
-            position.x += invaderSpeed * dt;
-        }
-        else {
-            position.x -= invaderSpeed * dt;
-        }
-        s->setPosition(position);
-    }
-
-    // Check for edge collision and change direction
-    for (auto& s : ships) {
-        Vector2f position = s->getPosition();
-        if ((movingRight && position.x + invaderWidth >= gameWidth) || (!movingRight && position.x <= 0)) {
-            movingRight = !movingRight;
-            for (auto& s : ships) {
-                position = s->getPosition();
-                position.y += invaderHeight/2; // Move down a row
-                s->setPosition(position);
+    // Update invaders' movement
+    for (auto& ship : ships) {
+        if (ship->getType() == ShipType::INVADER) {
+            Vector2f position = ship->getPosition();
+            if (movingRight) {
+                position.x += invaderSpeed * dt;
             }
-            break;
+            else {
+                position.x -= invaderSpeed * dt;
+            }
+            ship->setPosition(position);
         }
     }
 
+    // Check for invaders hitting the screen edge and move them down
+    for (auto& ship : ships) {
+        if (ship->getType() == ShipType::INVADER) {
+            Vector2f position = ship->getPosition();
+            if ((movingRight && position.x + invaderWidth >= gameWidth) ||
+                (!movingRight && position.x <= 0)) {
+                movingRight = !movingRight;
+                for (auto& invader : ships) {
+                    if (invader->getType() == ShipType::INVADER) {
+                        position = invader->getPosition();
+                        position.y += invaderHeight / 2;  // Move invaders down
+                        invader->setPosition(position);
+                    }
+                }
+                break;
+            }
+        }
+    }
 
-    // Quit Via ESC Key
-    if (Keyboard::isKeyPressed(Keyboard::Escape)) {
-        window.close();
+    // Update player movement
+    for (auto& ship : ships) {
+        if (ship->getType() == ShipType::PLAYER) {
+            ship->Update(dt);  // Call the player's Update method
+        }
+
+        // Quit Via ESC Key
+        if (Keyboard::isKeyPressed(Keyboard::Escape)) {
+            for (auto s : ships) {
+                delete s;
+            }
+            ships.clear();
+            window.close();
+        }
     }
 }
-
 int main() {
     RenderWindow window(VideoMode(gameWidth, gameHeight), "Space Invaders");
     Load();
