@@ -23,6 +23,12 @@ add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND}
     ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/res
 )
 
+# B2D - Box2D phyics library
+add_subdirectory("lib/b2d/Box2D")
+#include_directories("lib/b2d/Box2D/")
+set(B2D_INCS "lib/b2d/Box2D/")
+link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
+
 #### Practical 1 ####
 file(GLOB_RECURSE SOURCES practical_1/*.cpp practical_1/*.h)
 add_executable(PRACTICAL_1 ${SOURCES})
@@ -34,6 +40,13 @@ file(GLOB_RECURSE SOURCES 2_invaders/*.cpp 2_invaders/*.h)
 add_executable(2_INVADERS ${SOURCES} )
 target_include_directories(2_INVADERS SYSTEM PRIVATE ${SFML_INCS})
 target_link_libraries(2_INVADERS sfml-graphics)
+
+## physics
+file(GLOB_RECURSE SOURCES 5_physics/*.cpp 5_physics/*.h)
+add_executable(5_PHYSICS ${SOURCES})
+target_include_directories(5_PHYSICS SYSTEM PRIVATE ${SFML_INCS} ${B2D_INCS})
+target_link_libraries(5_PHYSICS Box2D sfml-graphics)
+set(EXECUTABLES ${EXECUTABLES} PRACTICAL_5_PHYSICS)
 
 # Set the working directory for Visual Studio debugger
 set_target_properties(2_INVADERS 
