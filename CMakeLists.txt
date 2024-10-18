@@ -20,8 +20,7 @@ link_directories("${CMAKE_BINARY_DIR}/lib/sfml/lib")
 add_custom_target(copy_resources ALL COMMAND ${CMAKE_COMMAND}
   -E copy_directory
     "${PROJECT_SOURCE_DIR}/res"
-    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/res
-)
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/res)
 
 # B2D - Box2D phyics library
 add_subdirectory("lib/b2d/Box2D")
